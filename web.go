@@ -18,6 +18,7 @@ func initWeb() {
 
 func postData(c echo.Context) error {
 	data, _ := ioutil.ReadAll(c.Request().Body)
+	recievedBoard = data
 	clip.WriteAll(string(data))
 	return c.String(http.StatusOK, "")
 }
