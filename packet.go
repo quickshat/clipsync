@@ -2,7 +2,7 @@ package main
 
 type packet struct {
 	ID      byte
-	Group   []string
+	Group   string
 	Payload interface{}
 }
 
