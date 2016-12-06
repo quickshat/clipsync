@@ -58,7 +58,8 @@ func initServer(port int, ifc string) {
 			continue
 		}
 
-		fmt.Println(b, n, src)
+		decoderStream.Write(b[:n])
+		fmt.Println(b[:n], n, src)
 	}
 }
 

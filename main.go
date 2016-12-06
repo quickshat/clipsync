@@ -1,5 +1,15 @@
 package main
 
+import (
+	"fmt"
+)
+
 func main() {
-	initServer(1024)
+	go encoder()
+	go decoder()
+	go initServer(1024, "Ethernet")
+	for {
+		p := <-recievedPacketChannel
+		fmt.Println(p)
+	}
 }
