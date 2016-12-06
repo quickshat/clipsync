@@ -34,7 +34,7 @@ func (a *activeDevice) loadMetrics() error {
 
 func (a *activeDevice) register() error {
 	r, err := http.PostForm(a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
-		"Port": {"8081"},
+		"port": {"8081"},
 	})
 	if err != nil || r.StatusCode != http.StatusOK {
 		return err
