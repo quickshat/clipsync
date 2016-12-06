@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -31,10 +32,20 @@ func (a *activeDevice) loadMetrics() error {
 	return nil
 }
 
+func (a *activeDevice) register() error {
+	r, err := http.PostForm(a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
+		"Port": {"8081"},
+	})
+	if err != nil || r.StatusCode != http.StatusOK {
+		return err
+	}
+	return nil
+}
+
 var activeDevices map[string]*activeDevice
 
 func main() {
-	disService = createDiscoveryService(1024, "Ethernet", 8081)
+	disService = createDiscoveryService(1024, "en0", 8081)
 	disService.start()
 	activeManager()
 	initWeb()
@@ -43,7 +54,7 @@ func main() {
 
 func clearManager() {
 	for key, val := range activeDevices {
-		if time.Now().Sub(val.LastPing).Minutes() > 3 {
+		if val.LastPing.Sub(time.Now()).Minutes() > 3 {
 			delete(activeDevices, key)
 			log.Println("[DISSERVICE] device", key, "inactive")
 		}
@@ -68,6 +79,7 @@ func activeManager() {
 				a := &activeDevice{fmt.Sprint(d.IP), d.Port, time.Now(), metrics{}}
 				err := a.loadMetrics()
 				if err == nil {
+					a.register()
 					activeDevices[fmt.Sprint(d.IP)] = a
 				}
 			}
