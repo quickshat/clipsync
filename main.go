@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -20,7 +21,7 @@ type activeDevice struct {
 }
 
 func (a *activeDevice) loadMetrics() error {
-	resp, err := http.Get(a.IP + ":" + fmt.Sprint(a.Port) + "/metrics")
+	resp, err := http.Get("http://" + a.IP + ":" + fmt.Sprint(a.Port) + "/metrics")
 	if err != nil {
 		return err
 	}
@@ -29,10 +30,12 @@ func (a *activeDevice) loadMetrics() error {
 		return err
 	}
 	json.Unmarshal(b, &a.Metrics)
+	fmt.Println(a.Metrics)
 	return nil
 }
 
 func (a *activeDevice) register() error {
+	log.Println("[MAIN] Manual register")
 	r, err := http.PostForm(a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
 		"port": {"8081"},
 	})
@@ -45,6 +48,7 @@ func (a *activeDevice) register() error {
 var activeDevices map[string]*activeDevice
 
 func main() {
+	activeDevices = make(map[string]*activeDevice)
 	disService = createDiscoveryService(1024, "en0", 8081)
 	disService.start()
 	activeManager()
@@ -71,16 +75,19 @@ func activeManager() {
 	go func() {
 		for {
 			d := <-disService.DiscoveredChannel
-			val, found := activeDevices[fmt.Sprint(d.IP)]
+			split := strings.Split(fmt.Sprint(d.IP), ":")
+			ip := split[0]
+
+			val, found := activeDevices[ip]
 			if found {
 				val.LastPing = time.Now()
 				val.Port = d.Port
 			} else {
-				a := &activeDevice{fmt.Sprint(d.IP), d.Port, time.Now(), metrics{}}
+				a := &activeDevice{ip, d.Port, time.Now(), metrics{}}
 				err := a.loadMetrics()
 				if err == nil {
 					a.register()
-					activeDevices[fmt.Sprint(d.IP)] = a
+					activeDevices[ip] = a
 				}
 			}
 		}
