@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"time"
 )
 
+var disService *discoveryService
+
 func main() {
-	go encoder()
-	go decoder()
-	go initServer(1024, "Ethernet")
+	disService = createDiscoveryService(1024, "en0", 6666)
+	disService.start()
 	for {
-		p := <-recievedPacketChannel
-		fmt.Println(p)
+		time.Sleep(time.Hour)
 	}
 }
