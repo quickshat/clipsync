@@ -36,7 +36,7 @@ func (a *activeDevice) loadMetrics() error {
 
 func (a *activeDevice) register() error {
 	log.Println("[MAIN] Manual register")
-	r, err := http.PostForm(a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
+	r, err := http.PostForm("http://"+a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
 		"port": {"8081"},
 	})
 	if err != nil || r.StatusCode != http.StatusOK {
