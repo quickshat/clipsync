@@ -40,7 +40,7 @@ func sendData(data []byte) error {
 			return err
 		}
 		globalConn.SetMulticastTTL(2)
-		if _, err := globalConn.WriteTo([]byte{1, 3, 3, 7}, nil, dst); err != nil {
+		if _, err := globalConn.WriteTo(data, nil, dst); err != nil {
 			return err
 		}
 	}
