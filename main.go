@@ -19,7 +19,7 @@ type activeDevice struct {
 }
 
 func (a *activeDevice) loadMetrics() error {
-	resp, err := http.Get(fmt.Sprint(a.IP) + ":" + fmt.Sprint(a.Port) + "/metrics")
+	resp, err := http.Get(a.IP + ":" + fmt.Sprint(a.Port) + "/metrics")
 	if err != nil {
 		return err
 	}

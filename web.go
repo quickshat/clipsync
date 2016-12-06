@@ -27,7 +27,7 @@ func initWeb() {
 	e.POST("/send", postData)
 
 	e.GET("/metrics", getMetrics)
-	e.GET("/discoveredDevices", getMetrics)
+	e.GET("/discoveredDevices", getDiscoveredDevices)
 
 	e.Logger.Fatal(e.Start(":8081"))
 }
