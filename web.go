@@ -55,7 +55,7 @@ func postRegister(c echo.Context) error {
 	} else {
 		a := &activeDevice{ip, int64(port), time.Now(), metrics{}}
 		err := a.loadMetrics()
-		if err != nil {
+		if err == nil {
 			log.Println("[REST] register", ip, port)
 			activeDevices[ip] = a
 		}
