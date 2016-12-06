@@ -11,7 +11,6 @@ import (
 var globalPort int
 var globalConn *ipv4.PacketConn
 var globalGroup net.IP
-var networkInterfaces []net.Interface
 var ignoreAddress []string
 
 func initServer(port int, ifc string) {
@@ -31,17 +30,17 @@ func initServer(port int, ifc string) {
 			}
 			strs := strings.Split(addr[i].String(), "/")
 			if len(strs) == 2 {
-				fmt.Println("Join on interface", is[i].Name)
-				ignoreAddress = append(ignoreAddress, strs[0]+":"+fmt.Sprint(globalPort))
-				networkInterfaces = append(networkInterfaces, is[i])
-				globalConn.JoinGroup(&is[i], &net.UDPAddr{IP: globalGroup})
 				if ifc == is[i].Name {
 					globalConn.SetMulticastInterface(&is[i])
-					fmt.Println("Interface Found")
+					ignoreAddress = append(ignoreAddress, strs[0]+":"+fmt.Sprint(globalPort))
+					globalConn.JoinGroup(&is[i], &net.UDPAddr{IP: globalGroup})
+					fmt.Println("Interface Found and binded!")
 				}
 			}
 		}
 	}
+
+	globalConn.SetMulticastTTL(2)
 
 	b := make([]byte, 100)
 	for {
@@ -65,14 +64,8 @@ func initServer(port int, ifc string) {
 
 func sendData(data []byte) error {
 	dst := &net.UDPAddr{IP: globalGroup, Port: globalPort}
-	for i := 0; i < len(networkInterfaces); i++ {
-		/*if err := globalConn.SetMulticastInterface(&networkInterfaces[i]); err != nil {
-			return err
-		}*/
-		globalConn.SetMulticastTTL(2)
-		if _, err := globalConn.WriteTo(data, nil, dst); err != nil {
-			return err
-		}
+	if _, err := globalConn.WriteTo(data, nil, dst); err != nil {
+		return err
 	}
 	return nil
 }
