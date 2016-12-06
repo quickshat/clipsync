@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo"
@@ -45,7 +46,7 @@ func postData(c echo.Context) error {
 
 func postRegister(c echo.Context) error {
 	port, _ := strconv.Atoi(c.FormValue("port"))
-	ip := c.Request().RemoteAddr
+	ip := strings.Split(c.Request().RemoteAddr, ":")[0]
 
 	val, found := activeDevices[ip]
 	if found {
