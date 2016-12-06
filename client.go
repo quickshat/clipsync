@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"golang.org/x/net/ipv4"
 )
@@ -11,24 +12,41 @@ var globalPort int
 var globalConn *ipv4.PacketConn
 var globalGroup net.IP
 var networkInterfaces []net.Interface
+var ignoreAddress []string
 
 func initServer(port int) {
 	globalPort = port
 	globalGroup = net.IPv4(224, 0, 0, 250)
 
 	is, _ := net.Interfaces()
-	networkInterfaces = is
 
 	c, _ := net.ListenPacket("udp4", "0.0.0.0:"+fmt.Sprint(globalPort))
 	globalConn = ipv4.NewPacketConn(c)
 
 	for i := 0; i < len(is); i++ {
-		globalConn.JoinGroup(&is[i], &net.UDPAddr{IP: globalGroup})
+		addr, _ := is[i].Addrs()
+		for i := 0; i < len(addr); i++ {
+			if strings.Contains(addr[i].String(), ":") {
+				continue
+			}
+			strs := strings.Split(addr[i].String(), "/")
+			if len(strs) == 2 {
+				fmt.Println("Join on interface", is[i].Name)
+				ignoreAddress = append(ignoreAddress, strs[0]+fmt.Sprint(globalPort))
+				networkInterfaces = append(networkInterfaces, is[i])
+				globalConn.JoinGroup(&is[i], &net.UDPAddr{IP: globalGroup})
+			}
+		}
 	}
 
-	b := make([]byte, 1500)
+	b := make([]byte, 100)
 	for {
 		n, _, src, _ := globalConn.ReadFrom(b)
+		for i := 0; i < len(ignoreAddress); i++ {
+			if fmt.Sprint(src) == ignoreAddress[i] {
+				continue
+			}
+		}
 		fmt.Println(b, n, src)
 	}
 }
