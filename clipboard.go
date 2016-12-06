@@ -1,9 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"net/http"
 	"time"
+
+	"fmt"
+
+	"bytes"
+
+	"log"
 
 	clip "github.com/atotto/clipboard"
 )
@@ -18,7 +23,14 @@ func detectNewClipboard() {
 			for i := 0; i < len(recievedBoard); i++ {
 				if currentBoard[i] != c[i] {
 					currentBoard = []byte(c)
-					resp, err := http.Post("", "application/octet-stream", bytes.Buffer())
+					buffer := new(bytes.Buffer)
+					for _, val := range activeDevices {
+						buffer.Write(currentBoard)
+						_, err := http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
+						if err != nil {
+							log.Println("Failed to send Clipboard to client:", val.IP)
+						}
+					}
 					break
 				}
 			}
