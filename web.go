@@ -38,6 +38,7 @@ func initWeb() {
 }
 
 func postData(c echo.Context) error {
+	emitLog("REST", "Clipboard data recieved!")
 	data, _ := ioutil.ReadAll(c.Request().Body)
 	recievedBoard = data
 	clip.WriteAll(string(data))
