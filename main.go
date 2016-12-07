@@ -5,62 +5,57 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
+	"os"
 	"strings"
 	"time"
 )
 
+var settings = struct {
+	Interface string
+	DisPort   int
+	WebPort   int
+}{"en0", 1024, 8081}
+
 var disService *discoveryService
-
-type activeDevice struct {
-	IP       string
-	Port     int64
-	LastPing time.Time
-	Metrics  metrics
-}
-
-func (a *activeDevice) loadMetrics() error {
-	resp, err := http.Get("http://" + a.IP + ":" + fmt.Sprint(a.Port) + "/metrics")
-	if err != nil {
-		return err
-	}
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	json.Unmarshal(b, &a.Metrics)
-	fmt.Println(a.Metrics)
-	return nil
-}
-
-func (a *activeDevice) register() error {
-	log.Println("[MAIN] Manual register")
-	r, err := http.PostForm("http://"+a.IP+":"+fmt.Sprint(a.Port)+"/register", url.Values{
-		"port": {"8081"},
-	})
-	if err != nil || r.StatusCode != http.StatusOK {
-		return err
-	}
-	return nil
-}
 
 var activeDevices map[string]*activeDevice
 
 func main() {
+	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err == nil {
+		log.SetOutput(f)
+		defer f.Close()
+	}
+
+	log.Println("== CLIP SYNC INSTANCE STARTED ==")
+
+	b, err := ioutil.ReadFile("settings.json")
+	if err != nil {
+		saveSettings()
+	} else {
+		json.Unmarshal(b, &settings)
+	}
+
 	activeDevices = make(map[string]*activeDevice)
-	disService = createDiscoveryService(1024, "en0", 8081)
+
+	disService = createDiscoveryService(settings.DisPort, settings.Interface, int64(settings.WebPort))
 	disService.start()
+
 	activeManager()
-	initWeb()
 	go detectNewClipboard()
+	initWeb()
+}
+
+func saveSettings() {
+	b, _ := json.MarshalIndent(settings, "", "	")
+	ioutil.WriteFile("settings.json", b, 0666)
 }
 
 func clearManager() {
 	for key, val := range activeDevices {
 		if val.LastPing.Sub(time.Now()).Minutes() > 3 {
 			delete(activeDevices, key)
-			log.Println("[DISSERVICE] device", key, "inactive")
+			emitLog("DISSERVICE", key, "inactive")
 		}
 	}
 }
@@ -86,7 +81,7 @@ func activeManager() {
 				a := &activeDevice{ip, d.Port, time.Now(), metrics{}}
 				err := a.loadMetrics()
 				if err == nil {
-					a.register()
+					//a.register()
 					activeDevices[ip] = a
 				}
 			}
