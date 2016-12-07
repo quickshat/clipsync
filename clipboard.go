@@ -18,13 +18,19 @@ var currentBoard []byte
 
 func detectNewClipboard() {
 	for {
-
+		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 {
+			currentBoard = getOsClipboard()
+			setOsClipboard(currentBoard)
+		} else if bytes.Compare(getOsClipboard(), currentBoard) != 0 {
+			currentBoard = getOsClipboard()
+			commit(currentBoard)
+		}
 		time.Sleep(time.Millisecond * 500)
 	}
 }
 
-func commit(c string) {
-	currentBoard = []byte(c)
+func commit(c []byte) {
+	currentBoard = c
 	buffer := new(bytes.Buffer)
 	for _, val := range activeDevices {
 		buffer.Write(currentBoard)
@@ -38,4 +44,8 @@ func commit(c string) {
 func getOsClipboard() []byte {
 	c, _ := clip.ReadAll()
 	return []byte(c)
+}
+
+func setOsClipboard(b []byte) {
+	clip.WriteAll(string(b))
 }
