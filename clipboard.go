@@ -19,7 +19,7 @@ var currentBoard []byte
 func detectNewClipboard() {
 	for {
 		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 {
-			currentBoard = getOsClipboard()
+			currentBoard = recievedBoard
 			setOsClipboard(currentBoard)
 		} else if bytes.Compare(getOsClipboard(), currentBoard) != 0 {
 			currentBoard = getOsClipboard()
@@ -30,10 +30,9 @@ func detectNewClipboard() {
 }
 
 func commit(c []byte) {
-	currentBoard = c
 	buffer := new(bytes.Buffer)
 	for _, val := range activeDevices {
-		buffer.Write(currentBoard)
+		buffer.Write(c)
 		_, err := http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
 		if err != nil {
 			log.Println("Failed to send Clipboard to client:", val.IP)
