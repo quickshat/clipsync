@@ -49,7 +49,7 @@ var activeDevices map[string]*activeDevice
 
 func main() {
 	activeDevices = make(map[string]*activeDevice)
-	disService = createDiscoveryService(1024, "en0", 8081)
+	disService = createDiscoveryService(1024, "Ethernet", 8081)
 	disService.start()
 	activeManager()
 	initWeb()

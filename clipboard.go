@@ -25,6 +25,7 @@ func detectNewClipboard() {
 					currentBoard = []byte(c)
 					buffer := new(bytes.Buffer)
 					for _, val := range activeDevices {
+						fmt.Println(currentBoard)
 						buffer.Write(currentBoard)
 						_, err := http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
 						if err != nil {
@@ -32,6 +33,17 @@ func detectNewClipboard() {
 						}
 					}
 					break
+				}
+			}
+		} else {
+			currentBoard = []byte(c)
+			buffer := new(bytes.Buffer)
+			for _, val := range activeDevices {
+				fmt.Println(currentBoard)
+				buffer.Write(currentBoard)
+				_, err := http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
+				if err != nil {
+					log.Println("Failed to send Clipboard to client:", val.IP)
 				}
 			}
 		}
@@ -42,6 +54,9 @@ func detectNewClipboard() {
 					clip.WriteAll(string(recievedBoard))
 				}
 			}
+		} else {
+			currentBoard = recievedBoard
+			clip.WriteAll(string(recievedBoard))
 		}
 		time.Sleep(time.Millisecond * 500)
 	}
