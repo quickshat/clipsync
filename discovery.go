@@ -141,6 +141,7 @@ func (d *discoveryService) start() {
 	aBytes := new(bytes.Buffer)
 	binary.Write(aBytes, binary.LittleEndian, d.AnnouncmentPort)
 	aBytes.WriteByte(1)
+	d.sendData(aBytes.Bytes())
 
 	go d.reciever()
 	go d.pinger()
