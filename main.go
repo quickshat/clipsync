@@ -14,7 +14,8 @@ var settings = struct {
 	Interface string
 	DisPort   int
 	WebPort   int
-}{"en0", 1024, 8081}
+	Group     string
+}{"en0", 1024, 8081, ""}
 
 var disService *discoveryService
 
@@ -81,7 +82,6 @@ func activeManager() {
 				a := &activeDevice{ip, d.Port, time.Now(), metrics{}}
 				err := a.loadMetrics()
 				if err == nil {
-					//a.register()
 					activeDevices[ip] = a
 				}
 			}

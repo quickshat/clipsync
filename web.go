@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/user"
@@ -28,21 +27,32 @@ type metrics struct {
 func initWeb() {
 	e := echo.New()
 
+	// Public
 	e.POST("/send", postData)
 	e.POST("/register", postRegister)
-
 	e.GET("/metrics", getMetrics)
-	e.GET("/discoveredDevices", getDiscoveredDevices)
+
+	// Local
+	local := e.Group("local")
+	local.Use(onlyLocal)
+	local.POST("/settings", postSettings)
+	local.GET("/discoveredDevices", getDiscoveredDevices)
+	local.GET("/settings", getSettings)
+	local.GET("/stop", getStop)
 
 	e.Logger.Fatal(e.Start(":8081"))
 }
 
 func postData(c echo.Context) error {
+	group := c.QueryParam("group")
+	if group != settings.Group {
+		return c.NoContent(http.StatusUnauthorized)
+	}
 	emitLog("REST", "Clipboard data recieved!")
 	data, _ := ioutil.ReadAll(c.Request().Body)
 	recievedBoard = data
 	clip.WriteAll(string(data))
-	return c.String(http.StatusOK, "")
+	return c.NoContent(http.StatusOK)
 }
 
 func postRegister(c echo.Context) error {
@@ -57,11 +67,11 @@ func postRegister(c echo.Context) error {
 		a := &activeDevice{ip, int64(port), time.Now(), metrics{}}
 		err := a.loadMetrics()
 		if err == nil {
-			log.Println("[REST] register", ip, port)
+			emitLog("REST", "register", ip, port)
 			activeDevices[ip] = a
 		}
 	}
-	return c.String(http.StatusOK, "")
+	return c.NoContent(http.StatusOK)
 }
 
 func getMetrics(c echo.Context) error {
@@ -73,6 +83,33 @@ func getMetrics(c echo.Context) error {
 	return c.JSON(http.StatusOK, metrics)
 }
 
+func postSettings(c echo.Context) error {
+	i := c.FormValue("Interface")
+	webPort := c.FormValue("webPort")
+	p, err := strconv.Atoi(webPort)
+
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	settings.Interface = i
+	settings.WebPort = p
+	return c.NoContent(http.StatusOK)
+}
+
 func getDiscoveredDevices(c echo.Context) error {
 	return c.JSON(http.StatusOK, activeDevices)
+}
+
+func getSettings(c echo.Context) error {
+	return c.JSON(http.StatusOK, settings)
+}
+
+func getStop(c echo.Context) error {
+	saveSettings()
+	go func() {
+		time.Sleep(time.Second * 2)
+		os.Exit(0)
+	}()
+	return c.NoContent(http.StatusOK)
 }
