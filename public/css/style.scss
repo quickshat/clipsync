@@ -1,0 +1,91 @@
+$error: #B9121B;
+
+html {
+    width: 850px;
+    height: 500px;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+nav {
+    width: 100%;
+    height: 39px;
+}
+
+hr {
+    margin: 0;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+}
+
+.tab {
+    float: left;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+    opacity: 0.6;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &.active {
+        opacity: 1;
+    } 
+}
+
+.settings {
+
+    .Cell {
+        padding: 10px;
+    }
+}
+
+.btn {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+
+    .icon {
+        width: 50px;
+        display: block;
+        float: left;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .text {
+        width: calc(100% - 100px);
+        text-align: center;
+        display: block;
+        float: left;
+    }
+
+    &.red {
+        background-color: $error;
+
+        &:hover {
+            background-color: $error * 1.2;
+        }
+
+        &:active {
+            background-color: $error * 0.8;
+        }
+    }
+
+}
