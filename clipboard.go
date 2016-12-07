@@ -20,7 +20,7 @@ func detectNewClipboard() {
 	for {
 		c, _ := clip.ReadAll()
 		if len(currentBoard) == len(c) {
-			for i := 0; i < len(recievedBoard); i++ {
+			for i := 0; i < len(currentBoard); i++ {
 				if currentBoard[i] != c[i] {
 					currentBoard = []byte(c)
 					buffer := new(bytes.Buffer)
