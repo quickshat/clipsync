@@ -11,8 +11,6 @@ import (
 	"time"
 
 	"github.com/labstack/echo"
-
-	clip "github.com/atotto/clipboard"
 )
 
 type metrics struct {
@@ -59,7 +57,6 @@ func postData(c echo.Context) error {
 	recievedBoard = data
 	recievedBoardLock.Unlock()
 
-	clip.WriteAll(string(data))
 	return c.NoContent(http.StatusOK)
 }
 

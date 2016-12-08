@@ -8,8 +8,6 @@ import (
 
 	"bytes"
 
-	"log"
-
 	"sync"
 
 	clip "github.com/atotto/clipboard"
@@ -21,8 +19,10 @@ var currentBoard []byte
 var recievedBoardLock sync.Mutex
 
 func detectNewClipboard() {
+	currentBoard = getOsClipboard()
 	for {
 		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 && recievedBoard != nil {
+			fmt.Println(string(recievedBoard), "recieved!")
 			currentBoard = recievedBoard
 			setOsClipboard(currentBoard)
 
@@ -34,7 +34,7 @@ func detectNewClipboard() {
 			currentBoard = getOsClipboard()
 			commit(currentBoard)
 		}
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 1)
 	}
 }
 
@@ -42,10 +42,8 @@ func commit(c []byte) {
 	buffer := new(bytes.Buffer)
 	for _, val := range activeDevices {
 		buffer.Write(c)
-		_, err := http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
-		if err != nil {
-			log.Println("Failed to send Clipboard to client:", val.IP)
-		}
+		http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
+		fmt.Println(string(c), "gesynct!")
 	}
 }
 
