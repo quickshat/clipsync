@@ -70,7 +70,7 @@
         <div v-if="'Logs'==selectedView" class="logs">
 
             <div class="content">
-                <div class="entry">test</div>
+                <div v-for="e in logs" class="entry">{{ e }}</div>
             </div>
 
         </div>

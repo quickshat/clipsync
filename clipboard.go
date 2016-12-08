@@ -22,7 +22,6 @@ func detectNewClipboard() {
 	currentBoard = getOsClipboard()
 	for {
 		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 && recievedBoard != nil {
-			fmt.Println(string(recievedBoard), "recieved!")
 			currentBoard = recievedBoard
 			setOsClipboard(currentBoard)
 
@@ -34,7 +33,7 @@ func detectNewClipboard() {
 			currentBoard = getOsClipboard()
 			commit(currentBoard)
 		}
-		time.Sleep(time.Millisecond * 1)
+		time.Sleep(time.Millisecond * 500)
 	}
 }
 
@@ -43,7 +42,6 @@ func commit(c []byte) {
 	for _, val := range activeDevices {
 		buffer.Write(c)
 		http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
-		fmt.Println(string(c), "gesynct!")
 	}
 }
 

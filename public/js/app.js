@@ -8,12 +8,15 @@ var app = new Vue({
         settings: {
             
         },
-        interfaces: []
+        interfaces: [],
+        logs: []
     },
     mounted: function () {
         apiEndpoint += ':8081';
         this.getSettings();
         this.getInterfaces();
+        this.getLogs();
+        setInterval(this.getLogs, 500);
     },
     methods: {
         selectTab: function (t) {
@@ -27,6 +30,11 @@ var app = new Vue({
         getInterfaces: function () {
             this.$http.get(apiEndpoint + '/local/interfaces').then((response) => {
                 app.interfaces = response.body;
+            }, (response) => { });
+        },
+        getLogs: function () {
+            this.$http.get(apiEndpoint + '/local/logs').then((response) => {
+                app.logs = response.body;
             }, (response) => { });
         }
     }

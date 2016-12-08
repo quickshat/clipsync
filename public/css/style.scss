@@ -108,15 +108,15 @@ hr {
 
         &::-webkit-scrollbar
         {
-            width: 10px;
+            width: 5px;
             background-color: #F5F5F5;
         }
 
         &::-webkit-scrollbar-thumb
         {
-            background-color: #000000;
-            border: 2px solid #555555;
+            background-color: rgba(#000000, 0.6);
         }
+
 
         .interface {
             padding: 5px 10px 5px 10px;
@@ -197,14 +197,13 @@ hr {
 
         &::-webkit-scrollbar
         {
-            width: 10px;
+            width: 5px;
             background-color: #F5F5F5;
         }
 
         &::-webkit-scrollbar-thumb
         {
-            background-color: #000000;
-            border: 2px solid #555555;
+            background-color: rgba(#000000, 0.6);
         }
 
         .entry {
@@ -214,7 +213,6 @@ hr {
             line-height: 30px;
             border-bottom: 1px solid $formBorder;
             font-size: 12px;
-            font-weight: 300;
         }
     }
 }

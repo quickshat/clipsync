@@ -73,7 +73,6 @@ func main() {
 			availableInterfaces = append(availableInterfaces, n)
 		}
 	}
-	fmt.Println(availableInterfaces)
 
 	activeDevices = make(map[string]*activeDevice)
 

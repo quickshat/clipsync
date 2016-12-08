@@ -76,11 +76,10 @@ hr {
   .settings .interface-list::-webkit-scrollbar-track {
     background-color: #F5F5F5; }
   .settings .interface-list::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
     background-color: #F5F5F5; }
   .settings .interface-list::-webkit-scrollbar-thumb {
-    background-color: #000000;
-    border: 2px solid #555555; }
+    background-color: rgba(0, 0, 0, 0.6); }
   .settings .interface-list .interface {
     padding: 5px 10px 5px 10px;
     width: 100%;
@@ -134,19 +133,17 @@ hr {
     .logs .content::-webkit-scrollbar-track {
       background-color: #F5F5F5; }
     .logs .content::-webkit-scrollbar {
-      width: 10px;
+      width: 5px;
       background-color: #F5F5F5; }
     .logs .content::-webkit-scrollbar-thumb {
-      background-color: #000000;
-      border: 2px solid #555555; }
+      background-color: rgba(0, 0, 0, 0.6); }
     .logs .content .entry {
       padding: 0 10px 0 10px;
       width: calc(100% - 20px);
       min-height: 30px;
       line-height: 30px;
       border-bottom: 1px solid #e6e6e6;
-      font-size: 12px;
-      font-weight: 300; }
+      font-size: 12px; }
 
 .btn {
   width: 100%;
