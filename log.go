@@ -20,5 +20,7 @@ func (l *logSplitter) Write(p []byte) (int, error) {
 }
 
 func emitLog(t string, message ...interface{}) {
-	log.Print("["+t+"]", message)
+	var out []interface{}
+	out = append([]interface{}{"[" + t + "] "}, message...)
+	log.Print(out...)
 }

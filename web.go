@@ -107,6 +107,9 @@ func postSettings(c echo.Context) error {
 	settings.Interface = i
 	settings.WebPort = p
 	settings.Group = group
+
+	emitLog("REST", "changed group to:", "<"+group+">")
+
 	return c.NoContent(http.StatusOK)
 }
 
