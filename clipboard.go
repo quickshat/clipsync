@@ -42,7 +42,7 @@ func commit(c []byte) {
 	buffer := new(bytes.Buffer)
 	for _, val := range activeDevices {
 		buffer.Write(c)
-		http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send", "application/octet-stream", buffer)
+		http.Post("http://"+val.IP+":"+fmt.Sprint(val.Port)+"/send?group="+settings.Group, "application/octet-stream", buffer)
 		fmt.Println(string(c), "gesynct!")
 	}
 }
