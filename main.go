@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 )
+
+var ipRegex = regexp.MustCompile("\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b")
 
 var settings = struct {
 	Interface string
@@ -18,13 +22,25 @@ var settings = struct {
 }{"en0", 1024, 8081, ""}
 
 var disService *discoveryService
+var logger *logSplitter
 
 var activeDevices map[string]*activeDevice
 
+type netInterface struct {
+	Name string
+	IP   string
+	ID   int
+}
+
+var availableInterfaces []netInterface
+
 func main() {
+	logger = &logSplitter{}
+	log.SetOutput(logger)
+
 	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err == nil {
-		log.SetOutput(f)
+		logger.Output = f
 		defer f.Close()
 	}
 
@@ -37,13 +53,35 @@ func main() {
 		json.Unmarshal(b, &settings)
 	}
 
+	is, err := net.Interfaces()
+	if err != nil {
+		emitLog("ERROR", "Can't get interface list!")
+		panic(err)
+	}
+	for i := 0; i < len(is); i++ {
+		n := netInterface{}
+		n.Name = is[i].Name
+		n.ID = is[i].Index
+		addrs, _ := is[i].Addrs()
+		for i := 0; i < len(addrs); i++ {
+			if ipRegex.MatchString(addrs[i].String()) {
+				n.IP = ipRegex.FindString(addrs[i].String())
+				break
+			}
+		}
+		if len(n.IP) > 0 {
+			availableInterfaces = append(availableInterfaces, n)
+		}
+	}
+	fmt.Println(availableInterfaces)
+
 	activeDevices = make(map[string]*activeDevice)
 
 	disService = createDiscoveryService(settings.DisPort, settings.Interface, int64(settings.WebPort))
 	disService.start()
 
 	activeManager()
-	go detectNewClipboard()
+	//go detectNewClipboard()
 	initWeb()
 }
 

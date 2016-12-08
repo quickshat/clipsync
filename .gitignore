@@ -26,3 +26,6 @@ _testmain.go
 *.json
 *.txt
 clipsync
+
+.sass-*/
+*.css.map
