@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"os/user"
@@ -90,15 +91,22 @@ func getMetrics(c echo.Context) error {
 
 func postSettings(c echo.Context) error {
 	i := c.FormValue("Interface")
-	webPort := c.FormValue("webPort")
+	group := c.FormValue("Group")
+	webPort := c.FormValue("WebPort")
 	p, err := strconv.Atoi(webPort)
 
 	if err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
+	if settings.Interface != i {
+		i, _ := net.InterfaceByName(i)
+		disService.Conn.SetMulticastInterface(i)
+	}
+
 	settings.Interface = i
 	settings.WebPort = p
+	settings.Group = group
 	return c.NoContent(http.StatusOK)
 }
 

@@ -34,9 +34,15 @@
                         <span class="title">Web Port</span>
                         <input v-model="settings.WebPort" type="text" name="webport" value="" placeholder="...">
                         <div class="sub">Defines the port the system uses. If you don't know what this means just leave it as it is.</div>
+                        
                     </div>
 
-                    <div class="btn red">
+                    <div v-on:click="saveSettings()" class="btn -bot">
+                        <i class="icon ion-ios-download"></i>
+                        <span class="text">Save Settings</span>
+                    </div>
+
+                    <div v-on:click="toggleOnOff()" class="btn red">
                         <i class="icon ion-close"></i>
                         <span class="text">Stop Clipsync</span>
                     </div>
@@ -46,7 +52,7 @@
                 <div class="Cell -6of12">
 
                     <div class="interface-list">
-                        <div v-for="i in interfaces" v-bind:class="{active:settings.Interface == i.Name}" class="interface">
+                        <div v-for="i in interfaces" v-bind:class="{active:settings.Interface == i.Name}" v-on:click="setInterface(i.Name)" class="interface">
                             <div class="left"><i class="icon ion-android-wifi"></i></div>
                             <div class="info">
                                 <span class="name">{{ i.Name }}</span>
@@ -62,8 +68,23 @@
 
         </div>
 
-        <div v-if="'Connections'==selectedView" class="connections">Connections lol
+        <div v-if="'Connections'==selectedView" class="connections">
 
+            <div class="content">
+                <div v-for="e, _ in connections" class="entry">
+                    <div class="left">
+                        <i v-if="e.Metrics.OS=='windows'" class="icon ion-social-windows"></i>
+                        <i v-else-if="e.Metrics.OS=='darwin'" class="icon ion-social-apple"></i>
+                        <i v-else class="icon ion-social-tux"></i>
+                    </div>
+                    <div class="info">
+                        <div class="name">{{ e.Metrics.Username }}</div>
+                        <div class="rest">
+                            <div class="ip">{{ e.IP }}<span class="port">:{{ e.Port }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
