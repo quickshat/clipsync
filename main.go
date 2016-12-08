@@ -81,7 +81,7 @@ func main() {
 	disService.start()
 
 	activeManager()
-	//go detectNewClipboard()
+	go detectNewClipboard()
 	initWeb()
 }
 

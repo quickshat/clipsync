@@ -54,7 +54,11 @@ func postData(c echo.Context) error {
 	}
 	emitLog("REST", "Clipboard data recieved!")
 	data, _ := ioutil.ReadAll(c.Request().Body)
+
+	recievedBoardLock.Lock()
 	recievedBoard = data
+	recievedBoardLock.Unlock()
+
 	clip.WriteAll(string(data))
 	return c.NoContent(http.StatusOK)
 }
