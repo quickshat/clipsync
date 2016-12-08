@@ -10,17 +10,26 @@ import (
 
 	"log"
 
+	"sync"
+
 	clip "github.com/atotto/clipboard"
 )
 
 var recievedBoard []byte
 var currentBoard []byte
 
+var recievedBoardLock sync.Mutex
+
 func detectNewClipboard() {
 	for {
-		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 {
+		if bytes.Compare(recievedBoard, getOsClipboard()) != 0 && recievedBoard != nil {
 			currentBoard = recievedBoard
 			setOsClipboard(currentBoard)
+
+			recievedBoardLock.Lock()
+			recievedBoard = nil
+			recievedBoardLock.Unlock()
+
 		} else if bytes.Compare(getOsClipboard(), currentBoard) != 0 {
 			currentBoard = getOsClipboard()
 			commit(currentBoard)
