@@ -15,10 +15,8 @@
     <div id="app">
 
         <nav>
-            <div v-for="v in views" v-on:click="selectTab(v)" v-bind:class="{active:selectedView==v}" class="tab">{{v}}</div>
+            <div class="logo">Clip<b>Sync</b></div> <div v-for="v in views" v-on:click="selectTab(v)" v-bind:class="{active:selectedView==v}" class="tab">{{v}}</div>
         </nav>
-
-        <hr>
 
         <div v-if="'Settings'==selectedView" class="settings">
 
@@ -26,22 +24,36 @@
 
                 <div class="Cell -6of12">
 
-                    <div class="net"></div>
+                    <div class="net">
+                        <span class="title">Share Group</span>
+                        <input v-model="settings.Group" type="text" name="sharegroup" value="" placeholder="...">
+                        <div class="sub">You need to set the same group on every device you want to share the clipboard with.</div>
+
+                        <br>
+
+                        <span class="title">Web Port</span>
+                        <input v-model="settings.WebPort" type="text" name="webport" value="" placeholder="...">
+                        <div class="sub">Defines the port the system uses. If you don't know what this means just leave it as it is.</div>
+                    </div>
 
                     <div class="btn red">
                         <i class="icon ion-close"></i>
-                        <span class="text">Stop</span> 
+                        <span class="text">Stop Clipsync</span>
                     </div>
 
                 </div>
 
                 <div class="Cell -6of12">
 
-                    <div class="interface">
-
-                        <span>Ethernet</span>
-                        <span class="ip">192.168.0.8</span>
-
+                    <div class="interface-list">
+                        <div v-for="i in interfaces" v-bind:class="{active:settings.Interface == i.Name}" class="interface">
+                            <div class="left"><i class="icon ion-android-wifi"></i></div>
+                            <div class="info">
+                                <span class="name">{{ i.Name }}</span>
+                                <span class="ip">{{ i.IP }}</span>
+                            </div>
+                            <div class="id">{{ i.ID }}</div>
+                        </div>
                     </div>
 
                 </div>
@@ -55,8 +67,11 @@
 
         </div>
 
-        <div v-if="'Logs'==selectedView" class="logs">Logs lil
+        <div v-if="'Logs'==selectedView" class="logs">
 
+            <div class="content">
+                <div class="entry">test</div>
+            </div>
 
         </div>
 

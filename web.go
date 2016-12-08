@@ -27,6 +27,8 @@ type metrics struct {
 func initWeb() {
 	e := echo.New()
 
+	e.Static("/", "public")
+
 	// Public
 	e.POST("/send", postData)
 	e.POST("/register", postRegister)
@@ -39,6 +41,8 @@ func initWeb() {
 	local.GET("/discoveredDevices", getDiscoveredDevices)
 	local.GET("/settings", getSettings)
 	local.GET("/stop", getStop)
+	local.GET("/interfaces", getInterfaces)
+	local.GET("/logs", getLog)
 
 	e.Logger.Fatal(e.Start(":8081"))
 }
@@ -112,4 +116,12 @@ func getStop(c echo.Context) error {
 		os.Exit(0)
 	}()
 	return c.NoContent(http.StatusOK)
+}
+
+func getInterfaces(c echo.Context) error {
+	return c.JSON(http.StatusOK, availableInterfaces)
+}
+
+func getLog(c echo.Context) error {
+	return c.JSON(http.StatusOK, logger.Logs)
 }
