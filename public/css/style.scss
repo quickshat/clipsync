@@ -175,15 +175,17 @@ hr {
 }
 
 .logs {
-    padding: 10px;
-    height: calc(100% - 59px);
+    background: #000;
+    height: calc(100% - 39px);
 
     .content {
-        background-color: $formBg;
-        border: 1px solid $formBorder;
+        font-family: 'Inconsolata', monospace;
+        color: #ccc;
+        display: block;
+        padding: 5px;
+        width: calc(100% - 5px);
         height: 100%;
-        width: 100%;
-        overflow-x: hidden;
+        font-size: 13px;
         overflow-y: scroll;
 
         &::-webkit-scrollbar-track
@@ -203,7 +205,7 @@ hr {
         }
 
         .entry {
-            padding: 0 10px 0 10px;
+            /*padding: 0 10px 0 10px;
             width: calc(100% - 20px);
             min-height: 30px;
             line-height: 30px;
@@ -213,7 +215,7 @@ hr {
 
             &:nth-child(even) {
                 background-color: rgba(black, 0.015)
-            }
+            }*/
         }
     }
 }
@@ -244,6 +246,14 @@ hr {
         &::-webkit-scrollbar-thumb
         {
             background-color: rgba(#000000, 0.6);
+        }
+
+        .empty {
+            opacity: 0.3;
+            font-size: 24px;
+            width: 100%;
+            text-align: center;
+            margin: calc(25% - 12px) 0 0 0;
         }
 
         .entry {

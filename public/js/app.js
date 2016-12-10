@@ -6,7 +6,7 @@ var app = new Vue({
         views: ['Settings', 'Connections', 'Logs'],
         selectedView: 'Settings',
         settings: {
-            
+
         },
         interfaces: [],
         logs: [],
@@ -14,7 +14,7 @@ var app = new Vue({
     },
     mounted: function () {
         apiEndpoint += ':8081';
-        
+
         this.getSettings();
         this.getInterfaces();
         this.getLogs();
@@ -42,24 +42,34 @@ var app = new Vue({
                 app.logs = response.body;
             }, (response) => { });
         },
-        getConnections: function() {
+        getConnections: function () {
             this.$http.get(apiEndpoint + '/local/discoveredDevices').then((response) => {
                 app.connections = response.body;
             }, (response) => { });
         },
-        saveSettings: function() {
+        saveSettings: function () {
             this.$http.post(apiEndpoint + '/local/settings', this.settings, {
                 emulateJSON: true
             }).then((response) => {
                 app.getSettings();
             }, (response) => { });
         },
-        toggleOnOff: function() {
+        toggleOnOff: function () {
 
         },
-        setInterface: function(i) {
+        setInterface: function (i) {
             this.settings.Interface = i;
             this.saveSettings()
+        }
+    },
+    computed: {
+        hasNoConnections: function () {
+            for (var prop in this.connections) {
+                if (this.connections.hasOwnProperty(prop))
+                    return false;
+            }
+
+            return JSON.stringify(this.connections) === JSON.stringify({});
         }
     }
 })

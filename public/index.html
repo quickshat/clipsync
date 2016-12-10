@@ -5,7 +5,10 @@
     <title>Clipsync</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+
     <link href="css/ionicons.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="css/grd.css" rel="stylesheet">
@@ -71,6 +74,7 @@
         <div v-if="'Connections'==selectedView" class="connections">
 
             <div class="content">
+                <div v-if="hasNoConnections" class="empty">No Current Connections...</div>
                 <div v-for="e, _ in connections" class="entry">
                     <div class="left">
                         <i v-if="e.Metrics.OS=='windows'" class="icon ion-social-windows"></i>
